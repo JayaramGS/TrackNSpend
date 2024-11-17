@@ -3,14 +3,14 @@
         display: flex;
         align-items: flex-start;
         gap: 1rem;
-        padding: 1.5rem 2rem;
+        padding: 0 1.5rem;
 
         @media only screen and (max-width: 450px) {
             flex-direction: column-reverse;
             align-items: center;
         }
 
-        .expenseform-container {
+        .expenseform-container, .budgetform-container {
             background: $background-color;
             display: flex;
             flex-direction: column;
@@ -101,7 +101,7 @@
 
                     button {
                         border-radius: 0.5rem;
-                        width: fit-content;
+                        width: 40%;
                         padding: 0.5rem;
                         background: $primary;
                         align-self: center;
@@ -113,50 +113,65 @@
                         &:hover {
                             background-color: $tertiary;
                         }
+
+                        @media screen and (max-width: 450px) {
+                            width: 60%;
+                        }
                     }
-                }
-            }
-        }
-
-        .total-expenses, .current-month-expenses {
-            width: fit-content;
-            background: $background-color;
-            display: flex;
-            padding: 0.9rem 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 5px 5px 15px 15px rgba(0, 0, 0, 0.05);
-
-            div {
-                text-align: center;
-            }
-
-            img {
-                width: 48px;
-                margin-right: 1rem;
-            }
-            
-            h3 {
-                color: $primary;
-                font-size: 2rem;
-
-                @media screen and (max-width: 450px) {
-                    font-size: 1.5rem;
                 }
             }
         }
     }
 
     .list-expenses {
-        width: 60%;
-        padding: 1rem 2rem;
+        width: 30%;
+        padding: 1rem 0;
 
         @media screen and (max-width: 450px) {
             width: 90%;
             padding: 0;
         }
+
+        .show-buttons {
+            display: flex;
+            justify-content: space-around;
+        }
     }
 
-    .widgets {
+    .no-expenses {
+        width: 30%;
+        display: flex;
+        flex-direction: column;
+        border-radius: 0.5rem;
+        background: $background-color;
+        padding: 1rem;
+        align-items: center;
+        margin-top: 1rem;
+
+        @media screen and (max-width: 450px) {
+            width: 90%;
+            flex-direction: row;
+            align-items: center;
+            margin-top: 0;
+            gap: 1rem;
+        }
+
+        img {
+            width: 48px;
+            margin-bottom: 1rem;
+
+            @media screen and (max-width: 450px) {
+                width: 36px;
+                margin-bottom: 0;
+            }
+        }
+
+        h3, span {
+            text-align: center;
+        }
+    }
+
+    .additional-info {
         width: 35%;
         padding: 1rem 0;
         display: flex;
@@ -164,18 +179,7 @@
         gap: 1rem;
 
         @media only screen and (max-width: 450px) {
-            width: auto;
-        }
-
-        .total-expenses-widget {
-            display: flex;
-            justify-content: space-between;
-
-            @media only screen and (max-width: 450px) {
-                width: 70%;
-                flex-direction: column-reverse;
-                gap: 1rem;
-            }
+            display: none;
         }
     }
 }

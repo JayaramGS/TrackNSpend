@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 })
 
 //Routes
-app.use('/api/overview', routes)
+app.use('/api', routes)
 
 //Connect to MongoDB
 mongoDB.connect(process.env.MONGO_URI)

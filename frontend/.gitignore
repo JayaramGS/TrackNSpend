@@ -9,6 +9,9 @@
 # production
 /build
 
+# fake-service
+/fake-service/node_modules
+
 # misc
 .DS_Store
 .env

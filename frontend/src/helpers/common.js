@@ -1,3 +1,7 @@
+function parseDate(dateStr) {
+    return new Date(dateStr);
+}
+
 export function setTokenWithExpiry(key, token) {
     const now = new Date();
     const expiryTime = now.getTime() +  60 * 60 * 1000;
@@ -15,7 +19,7 @@ export function removeToken() {
 };
 
 export function formatDate(value) {
-	const date = new Date(value);
+	const date = parseDate(value);
 	const ISODate = date.toISOString();
 
 	const [year, month, day] = ISODate.split('T')[0].split('-');
@@ -42,8 +46,8 @@ export function filterExpenses(expenses, condition) {
     const { fromDate, toDate } = condition
 
     return expenses.filter(expense => {
-        const expenseDate = new Date(expense.date);
-        return expenseDate >= new Date(fromDate) && expenseDate <= new Date(toDate);;
+        const expenseDate = parseDate(expense.date);
+        return expenseDate >= parseDate(fromDate) && expenseDate <= parseDate(toDate);;
     });
 }
 
@@ -53,7 +57,7 @@ export function totalExpenses(expenses) {
     }
 
     const total = expenses.reduce((accumulator, expense) => {
-        return accumulator + (expense.amount || 0);
+        return accumulator + (Number(expense.amount) || 0);
     }, 0);
 
     return total
@@ -87,16 +91,60 @@ export function findCurrentMonth() {
     return currentMonth;
 }
 
+export function findCurrentYear() {
+    const date = new Date();
+    const currentYear =date.getFullYear();
+    return currentYear;
+}
+
 export function findCurrentMonthExpenses(expenses) {
     const date = new Date();
     const currentMonth = date.getMonth();
     const currentYear = date.getFullYear();
 
     const currentMonthExpenses = expenses.filter(expense => {
-        const expenseDate = new Date(expense.date.split('/').reverse().join('-')); // Convert DD/MM/YYYY to YYYY-MM-DD
+        const expenseDate = parseDate(expense.date);
         return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
     });
 
     const total = totalExpenses(currentMonthExpenses);
     return total;
 }
+
+export function getCurrentMonthBudget(budgets) {
+    const date = new Date();
+    const currentMonth = date.getMonth();
+    const currentYear = date.getFullYear();
+
+    const currentMonthBudget = budgets.filter(budget => {
+        const budgetMonth = budget.month
+    })
+}
+
+export function sortExpenses(expenses) {
+    const sortedExpenses = expenses
+        .filter(expense => expense.date)
+        .sort((a,b) => parseDate(b.date) - parseDate(a.date))
+    return sortedExpenses;
+}
+
+export const aggregateExpensesByMonth = (expenses) => {
+    const monthList = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    const monthlyExpenses = monthList.reduce((acc, month) => {
+        acc[month] = 0;
+        return acc;
+    }, {});
+
+    expenses.forEach(expense => {
+        const month = parseDate(expense.date).toLocaleString('default', { month: 'short' });
+        if (monthlyExpenses.hasOwnProperty(month)) {
+            monthlyExpenses[month] += expense.amount;
+        }
+    });
+
+    const sortedMonths = [...monthList];
+    const sortedAmounts = sortedMonths.map(month => monthlyExpenses[month]);
+
+    return { months: sortedMonths, amounts: sortedAmounts };
+};

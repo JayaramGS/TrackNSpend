@@ -45,7 +45,6 @@ const signIn = async(req, res) => {
         if(!user) {
             return res.status(400).json({msg: 'User not found, please enter valid Username'});
         }
-
         const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch) {
             return res.status(400).json({msg: 'Wrong Password, please enter valid password'});
@@ -75,8 +74,8 @@ const signIn = async(req, res) => {
 const authMiddleware = async(req, res, next) => { 
     try {
         const authHeader = req.header('Authorization');
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ msg: 'Authorization denied, no token' });
+        if (!authHeader || !authHeader.startsWith('Bearer ') || authHeader.substring(7) === "null") {
+            return res.status(401).json({ msg: 'Authorization denied, no valid token' });
         }
         const token = authHeader.substring(7);
         const data = JSON.parse(token);
@@ -86,7 +85,7 @@ const authMiddleware = async(req, res, next) => {
         next();
     }
     catch(error) {
-        res.status(401).json({ msg: 'Token is not valid' });
+        res.status(401).json({ msg: 'Authorization Denied' });
         console.error(error)
         next();
     }
@@ -101,16 +100,16 @@ const updatePassword = async (req, res) => {
             return res.status(400).json({msg: 'Old Password is Wrong!!'});
         }
         if(oldPassword === newPassword) {
-            return res.status(400).json({msg: `New password shouldn't be the old password`})
+            return res.status(400).json({msg: `New password shouldn't be the old password`});
         }
         const salt = await bcrypt.genSalt(10);
         const updatedPassword = await bcrypt.hash(newPassword, salt);
-        await User.findOneAndUpdate({userName: userName}, {password: updatedPassword}, {new: true})
-        res.status(200).json({msg: "Password Updated"})
+        await User.findOneAndUpdate({userName: userName}, {password: updatedPassword}, {new: true});
+        res.status(200).json({msg: "Password Updated"});
     }
     catch(error) {
         console.error(error.message);
-        res.status(500).send('Server Error')
+        res.status(500).send('Server Error');
     }
 }
 

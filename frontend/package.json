@@ -3,8 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^6.1.6",
     "axios": "^1.7.2",
+    "chart.js": "^4.4.4",
     "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^6.23.1",
@@ -15,7 +20,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "start": "concurrently \"npm run dev\" \"cd ../backend && npm run dev\""
+    "start": "concurrently \"npm run dev\" \"cd ../backend && npm run dev\"",
+    "local": "concurrently \"npm run dev\" \"cd fake-service && npm start\""
   },
   "browserslist": {
     "production": [

@@ -1,4 +1,4 @@
-.expenses-container {
+.expenses-container, .budgetform-container {
     background: $background-color;
     display: flex;
     flex-direction: column;
@@ -39,7 +39,7 @@
         
         button {
             border-radius: 0.5rem;
-            width: fit-content;
+            width: 30%;
             padding: 0.5rem;
             background: $primary;
             align-self: center;

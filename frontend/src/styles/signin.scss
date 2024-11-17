@@ -1,6 +1,5 @@
 .authentication {
-    header {
-        margin-bottom: 1rem;
+    &__header {
         display: flex;
         justify-content: space-between;
         padding: 1rem;
@@ -21,17 +20,18 @@
         height: 48px;
         cursor: pointer;
         border: 2px solid $raven;
+        margin: 0 2rem;
     }
 
-    .content {
+    &__content {
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding: 2rem;
+        padding: 8rem 2rem 2rem;
 
         @media screen and (max-width: 450px) {
             flex-direction: column;
-            padding: 1rem;
+            padding: 14rem 1rem 1rem;
         }
 
         img {

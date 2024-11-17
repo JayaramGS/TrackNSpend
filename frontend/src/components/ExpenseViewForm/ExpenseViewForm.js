@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { filterExpenses } from '../../helpers/common'
 import { useExpenseContext } from '../../hooks/useExpenseContext';
-import ToastModal from '../ToastModal/ToastModal';
 
 const ExpenseViewForm = ({ expense }) => {
     const {dispatch} = useExpenseContext(); 
     const [fromDate, setFromDate] = useState('')
     const [toDate, SetToDate] = useState('');
     const [originalExpenses] = useState(expense);
-    const [toast, setToast] = useState(false);
-    const [toastType, setToastType] = useState('');
-    const [toastMessage, setToastMessage] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,21 +17,39 @@ const ExpenseViewForm = ({ expense }) => {
 
         const condition = { fromDate, toDate };
         const filtered = filterExpenses(expense, condition);
-        dispatch({type:'SET_EXPENSES', payload: filtered}) 
+        dispatch({type:'SET_EXPENSES', payload: filtered});
+        dispatch({
+            type: 'SHOW_TOAST',
+            payload: {
+                message: `Filter has been applied`,
+                type: 'success'
+            }
+        });
     };
 
     const handleReset = () => {
         setFromDate('');
         SetToDate('');
         dispatch({ type: 'SET_EXPENSES', payload: originalExpenses });
+        dispatch({
+            type: 'SHOW_TOAST',
+            payload: {
+                message: `Filter has been removed`,
+                type: 'success'
+            }
+        });
     };
 
     const validateInputFields = (fromDate, toDate) => {
         let valid = true;
         if (!fromDate || !toDate) {
-            setToast(true);
-            setToastType('error');
-            setToastMessage('Please enter the dates');
+            dispatch({
+                type: 'SHOW_TOAST',
+                payload: {
+                    message: `Please enter the dates`,
+                    type: 'error'
+                }
+            });
             valid = false;
             return;
         }
@@ -53,7 +67,6 @@ const ExpenseViewForm = ({ expense }) => {
                     <button type="submit">View</button>
                     <button type="button" onClick={handleReset}>Clear</button>
                 </div>
-                {toast && <ToastModal message={toastMessage} hideModal={() => setToast(false)} type={toastType} />}
             </form>
         </>
     )

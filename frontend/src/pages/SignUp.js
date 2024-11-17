@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useExpenseContext } from '../hooks/useExpenseContext';
 import { useNavigate } from 'react-router-dom';
 import { setTokenWithExpiry, validatePassword, isValidPassword } from '../helpers/common';
 import BgImage from '../assets/signup.svg';
 import Logo from '../assets/logo.svg';
 import Show from '../assets/show.svg';
 import Hide from '../assets/hide.svg';
-import ToastModal from '../components/ToastModal/ToastModal';
 
 const Signup = () => {
+  const { dispatch } = useExpenseContext();
   const [userName, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [toast, setToast] = useState(false);
-  const [toastType, setToastType] = useState('');
-  const [toastMessage, setToastMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate();
 
@@ -26,31 +24,45 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_APPLICATION_URL}/api/overview/signup`, { userName, password });
+      const response = await axios.post(`${process.env.REACT_APP_APPLICATION_URL}/api/signup`, { userName, password });
 
       if (response.status === 200) {
-        setToast(true);
-        setToastType('success');
-        setToastMessage(response.data.msg);
+        dispatch({
+          type: 'SHOW_TOAST',
+          payload: {
+              message: `${response.data.msg}`,
+              type: 'success'
+          }
+        });
         const token = await response.data.token;
+        const name = response.data.userName;
+        sessionStorage.setItem('name', name);
         setTokenWithExpiry('token', token);
         setTimeout(() => {
           navigate('/home');
-      }, 1000);
+      }, 2000);
       } else {
         console.error('Token not received in response');
       }
     } 
     catch (error) {
       if (error.response && error.response.status === 400) {
-        setToast(true);
-        setToastType('error');
-        setToastMessage(error.response.data.msg);
+        dispatch({
+          type: 'SHOW_TOAST',
+          payload: {
+              message: `${error.response.data.msg}`,
+              type: 'error'
+          }
+        });
       }
       else {
-          setToast(true);
-          setToastType('error');
-          setToastMessage("Network Error");
+        dispatch({
+          type: 'SHOW_TOAST',
+          payload: {
+              message: 'Network Error',
+              type: 'error'
+          }
+        });
       }
     }
   }
@@ -62,25 +74,37 @@ const Signup = () => {
     const paswordMismatch = validatePassword(password, confirmPassword);
 
     if (validUserName)  {
-      setToast(true);
-      setToastType('error');
-      setToastMessage('Username should have atleast 5 characters');
+      dispatch({
+        type: 'SHOW_TOAST',
+        payload: {
+            message: 'Username should have atleast 5 characters',
+            type: 'error'
+        }
+      });
       valid = false;
       return;
     }
     if (validPassword) {
-      setToast(true);
-      setToastType('error');
-      setToastMessage('Password should have atleast 8 characters');
+      dispatch({
+        type: 'SHOW_TOAST',
+        payload: {
+            message: 'Password should have atleast 8 characters',
+            type: 'error'
+        }
+      });
       setPassword('');
       setConfirmPassword('');
       valid = false;
       return;
     }
     if (paswordMismatch) {
-      setToast(true);
-      setToastType('error');
-      setToastMessage('Password mismatch, enter same passwords in both fields');
+      dispatch({
+        type: 'SHOW_TOAST',
+        payload: {
+            message: 'Password mismatch, enter same passwords in both fields',
+            type: 'error'
+        }
+      });
       setConfirmPassword('');
       valid = false;
       return;
@@ -101,11 +125,11 @@ const Signup = () => {
 
   return (
     <div className='authentication'>
-      <header>
+      <header className='authentication__header'>
         <img className='logo' src={Logo}/>
         <button onClick={() => navigate('/signin')}>SIGN IN</button>
       </header>
-      <div className='content'>
+      <div className='authentication__content'>
         <img src={BgImage} />
         <form onSubmit={handleSubmit}>
           <h2>Track N Spend</h2>
@@ -115,7 +139,6 @@ const Signup = () => {
             <img src={showPassword ? Hide : Show} onClick={passwordVisibility} />
           </div>
           <input type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-          {toast && <ToastModal message={toastMessage} hideModal={() => setToast(false)} type={toastType} />}
           <button type="submit">SIGN   UP</button>
         </form>
       </div>

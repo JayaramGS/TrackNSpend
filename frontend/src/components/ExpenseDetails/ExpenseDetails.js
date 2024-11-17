@@ -24,11 +24,18 @@ const ExpenseDetails = ({expense}) => {
     //Delete Expense
     const handleDeleteConfirm = async () => {
         setShowDialog(false);
-        const response = await axios.delete(`${process.env.REACT_APP_APPLICATION_URL}/api/overview/${expense._id}`)
+        const response = await axios.delete(`${process.env.REACT_APP_APPLICATION_URL}/api/${expense._id}`)
 
         if(response.status === 200) {
             const result = await response.data
             dispatch({type:'DELETE_EXPENSE', payload: result})
+            dispatch({
+                type:'SHOW_TOAST',
+                payload: {
+                    message: 'Expense has been deleted',
+                    type: 'success'
+                }
+            })
         }
     }
 
@@ -52,7 +59,7 @@ const ExpenseDetails = ({expense}) => {
     const handleSave = async () => {
         setShowEditOption(false);
         setShowDialog(false);
-        const response = await axios.patch(`${process.env.REACT_APP_APPLICATION_URL}/api/overview/${expense._id}`, {
+        const response = await axios.patch(`${process.env.REACT_APP_APPLICATION_URL}/api/${expense._id}`, {
             date: editedExpense.date,
             place: editedExpense.place,
             amount: editedExpense.amount
@@ -60,7 +67,14 @@ const ExpenseDetails = ({expense}) => {
 
         if(response.status === 200) {
             const result = await response.data
-            dispatch({type:'UPDATE_EXPENSE', payload: result})
+            dispatch({type:'UPDATE_EXPENSE', payload: result});
+            dispatch({
+                type:'SHOW_TOAST',
+                payload: {
+                    message: 'Expense has been updated',
+                    type: 'success'
+                }
+            })
         }
     }
 

@@ -4,18 +4,13 @@ import axios from "axios";
 import Date from '../../assets/date.svg';
 import Place from '../../assets/place.svg';
 import Amount from '../../assets/amount.svg';
-import ToastModal from "../ToastModal/ToastModal";
 
 const ExpenseForm = () => {
     const { dispatch } = useExpenseContext()
-
     const [date, setDate] = useState('')
     const [place, setPlace] = useState('')
     const [amount, setAmount] = useState('')
     const [emptyFields, setEmptyFields] = useState([]);
-    const [toast, setToast] = useState(false);
-    const [toastType, setToastType] = useState('');
-    const [toastMessage, setToastMessage] = useState('');
     const token = sessionStorage.getItem('token');
 
     const handleSubmit = async (e) => {
@@ -24,7 +19,7 @@ const ExpenseForm = () => {
         const expense = { date, place, amount }
 
         try {
-            const response = await axios.post(`${process.env.REACT_APP_APPLICATION_URL}/api/overview`, expense, {
+            const response = await axios.post(`${process.env.REACT_APP_APPLICATION_URL}/api`, expense, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -36,30 +31,46 @@ const ExpenseForm = () => {
                 setPlace('');
                 setAmount('');
                 setEmptyFields([]);
-                setToast(true);
-                setToastType('success');
-                setToastMessage('Expense added successfully');
                 dispatch({type: 'CREATE_EXPENSES', payload: result})
+                dispatch({
+                    type: 'SHOW_TOAST',
+                    payload: {
+                        message: 'Expense added successfully',
+                        type: 'success'
+                    }
+                })
             }
         } catch (err) {
             console.log(err)
             if (err.response) {
                 const { status, data } = err.response;
                 if (status === 400) {
-                    setToast(true);
-                    setToastType('error');
-                    setToastMessage('Please Fill all the fields');
                     setEmptyFields(data.emptyFields);
+                    dispatch({
+                        type: 'SHOW_TOAST',
+                        payload: {
+                            message: `Please fill all the fields`,
+                            type: 'error'
+                        }
+                    });
                 } else {
-                    setToast(true);
-                    setToastType('error');
-                    setToastMessage('An Unexpected error occured');
+                    dispatch({
+                        type: 'SHOW_TOAST',
+                        payload: {
+                            message: `An unexpected error occurred`,
+                            type: 'error'
+                        }
+                    });
                 }
             }
             else {
-                setToast(true);
-                setToastType('error');
-                setToastMessage('Network error');
+                dispatch({
+                    type: 'SHOW_TOAST',
+                    payload: {
+                        message: 'Network error',
+                        type: 'error'
+                    }
+                });
             }
         }       
     }
@@ -90,7 +101,6 @@ const ExpenseForm = () => {
                 <input type="number" onChange={(e) => setAmount(e.target.value)} value={amount} placeholder="Amount"
                     min="0" className={emptyFields.includes('Amount') ? 'error' : ''} />
             </div>
-            {toast && <ToastModal message={toastMessage} hideModal={() => setToast(false)} type={toastType} />}
             <button>Add Expense</button>
         </form>
     )

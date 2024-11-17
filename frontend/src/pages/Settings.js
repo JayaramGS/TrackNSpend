@@ -1,15 +1,13 @@
 import React, { useState } from "react";
 import axios from 'axios';
+import { useExpenseContext } from '../hooks/useExpenseContext';
 import { isValidPassword, validatePassword, isNotNull } from "../helpers/common";
-import ToastModal from "../components/ToastModal/ToastModal";
 
 const Settings = () => {
+    const { dispatch } = useExpenseContext();
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [toast, setToast] = useState(false);
-    const [toastType, setToastType] = useState('');
-    const [toastMessage, setToastMessage] = useState('');
     const userName = sessionStorage.getItem('name');
 
     const handleSubmit = async (e) => {
@@ -20,12 +18,16 @@ const Settings = () => {
         }
 
         try {
-            const response = await axios.post(`${process.env.REACT_APP_APPLICATION_URL}/api/overview/change_password`, { userName, oldPassword, newPassword });
+            const response = await axios.post(`${process.env.REACT_APP_APPLICATION_URL}/api/change_password`, { userName, oldPassword, newPassword });
 
             if (response.status === 200) {
-                setToast(true);
-                setToastType('success');
-                setToastMessage(response.data.msg);
+                dispatch({
+                    type: 'SHOW_TOAST',
+                    payload: {
+                        message: `${response.data.msg}`,
+                        type: 'success'
+                    }
+                });
                 setOldPassword('');
                 setNewPassword('');
                 setConfirmPassword('');
@@ -33,14 +35,22 @@ const Settings = () => {
         }
         catch(err) {
             if(err.response && err.response.status === 400) {
-                setToast(true);
-                setToastType('error');
-                setToastMessage(err.response.data.msg);
+                dispatch({
+                    type: 'SHOW_TOAST',
+                    payload: {
+                        message: `${err.response.data.msg}`,
+                        type: 'error'
+                    }
+                });
             }
             else {
-                setToast(true);
-                setToastType('error');
-                setToastMessage("Network Error");
+                dispatch({
+                    type: 'SHOW_TOAST',
+                    payload: {
+                        message: `Network Error`,
+                        type: 'error'
+                    }
+                });
             }
         }
     }
@@ -52,26 +62,38 @@ const Settings = () => {
         const paswordMismatch = validatePassword(newPassword, confirmPassword);
 
         if(isValid) {
-            setToast(true);
-            setToastType('error');
-            setToastMessage('Old Password is required');
+            dispatch({
+                type: 'SHOW_TOAST',
+                payload: {
+                    message: `Old Password is required`,
+                    type: 'error'
+                }
+            });
             valid = false;
             return;
         }
 
         if (validPassword) {
-            setToast(true);
-            setToastType('error');
-            setToastMessage('Password should have atleast 8 characters');
+            dispatch({
+                type: 'SHOW_TOAST',
+                payload: {
+                    message: `Password should have atleast 8 characters`,
+                    type: 'error'
+                }
+            });
             setNewPassword('');
             setConfirmPassword('');
             valid = false;
             return;
         }
         if (paswordMismatch) {
-          setToast(true);
-          setToastType('error');
-          setToastMessage('Password mismatch, enter same passwords in both fields');
+        dispatch({
+            type: 'SHOW_TOAST',
+            payload: {
+                message: `Password mismatch, enter same passwords in both fields`,
+                type: 'error'
+            }
+        });
           setConfirmPassword('');
           valid = false;
           return;
@@ -96,7 +118,6 @@ const Settings = () => {
                             <label>Confirm  Password</label>
                             <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                         </div>
-                            {toast && <ToastModal message={toastMessage} hideModal={() => setToast(false)} type={toastType} />}
                             <button onClick={handleSave}>Save</button>
                     </form>
                 </div>
