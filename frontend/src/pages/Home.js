@@ -38,7 +38,7 @@ const Home = () => {
             navigate('/signin');
         }
 
-        const fetchExpenses = getAllExpenses(dispatch, setIsLoading);
+        const fetchExpenses = getAllExpenses(dispatch, setIsLoading, token);
         fetchExpenses();
     }, [dispatch, navigate, token]);
 
@@ -53,8 +53,6 @@ const Home = () => {
     const settingsForm = () => {
         setShowSettings(prevState => !prevState)
     }
-
-
 
     return(
         <>
