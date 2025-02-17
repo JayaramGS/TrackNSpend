@@ -24,7 +24,7 @@ export const getAllExpenses = (dispatch, setIsLoading, token) => {
     }
 }
 
-export const getAllBudgets = (dispatch, setIsLoading) => {
+export const getAllBudgets = (dispatch, setIsLoading, token) => {
     return async () => {
         setIsLoading(true);
 
