@@ -1,8 +1,6 @@
 import axios from "axios";
 
-const token = sessionStorage.getItem('token');
-
-export const getAllExpenses = (dispatch, setIsLoading) => {
+export const getAllExpenses = (dispatch, setIsLoading, token) => {
     return async () => {
         setIsLoading(true);
 
