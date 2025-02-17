@@ -26,9 +26,9 @@ const Budget = () => {
         if (!token) {
             navigate('/signin');
         }
-        const fetchExpenses = getAllExpenses(dispatch, setIsLoading);
+        const fetchExpenses = getAllExpenses(dispatch, setIsLoading, token);
         fetchExpenses();
-        const fetchBudget = getAllBudgets(dispatch, setIsLoading);
+        const fetchBudget = getAllBudgets(dispatch, setIsLoading, token);
         fetchBudget();
     }, [token])
 
